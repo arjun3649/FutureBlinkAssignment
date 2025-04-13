@@ -53,7 +53,7 @@ try {
 const app = express();
 const port = process.env.PORT || 4000;
 
-const allowedOrigins = ['http://localhost:5173']
+const allowedOrigins = ['https://futureblink-w2ml.onrender.com']
 
 // Middleware setup
 app.use(express.json());
