@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import React, { useState } from 'react';
+import { BASE_URL } from '../../../server/utils/BaseUrl';
 
 const EmailTemplateForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ const EmailTemplateForm = ({ onClose }) => {
     }
 
     try {
-      await axios.post('http://localhost:4000/api/email-templates', formData, {
+      await axios.post(`${BASE_URL}/api/email-templates`, formData, {
         headers: { 'Content-Type': 'application/json' },
       });
 

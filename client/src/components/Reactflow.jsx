@@ -27,6 +27,7 @@ import ListSubmitCard from './ListSourceSubmit';
 import PortalModal from './PortalModal';
 import SequenceSettings from './SequenceSettings';
 import WaitTimeSelect from './WaitTimeSelect';
+import { BASE_URL } from '../../../server/utils/BaseUrl';
 
 const nodeTypes = { selectLead: SelectLead };
 
@@ -63,14 +64,14 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
       
       let processedNodes = [...existingNodes];
       
-      // Add necessary data to all nodes
+     
       processedNodes = processedNodes.map(node => ({
         ...node,
         data: {
           ...node.data,
-          id: node.id, // Include ID in data
-          onDelete: onDeleteNode, // Add delete handler
-          handleclick: () => handleNodeClick(node) // Add click handler
+          id: node.id, 
+          onDelete: onDeleteNode,
+          handleclick: () => handleNodeClick(node)
         }
       }));
       
@@ -171,7 +172,7 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
       setNodes(processedNodes);
       setEdges(processedEdges);
     } else if (nodes.length === 0) {
-      // Initialize base nodes with necessary handlers
+      
       const initialNodes = baseNodes.map(node => ({
         ...node,
         data: {
@@ -187,7 +188,7 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
     }
   }, [existingNodes, existingEdges]);
 
-  // Get user 
+ 
  const getUserId = () => {
   try {
   
@@ -211,22 +212,22 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
 
   const { data: leadSources = [] } = useQuery({
     queryKey: ['leadSources'],
-    queryFn: () => axios.get('http://localhost:4000/api/lead-sources').then(res => res.data),
+    queryFn: () => axios.get(`${BASE_URL}/api/lead-sources`).then(res => res.data),
   });
 
   const { data: emailTemplates = [] } = useQuery({
     queryKey: ['emailTemplates'],
-    queryFn: () => axios.get('http://localhost:4000/api/email-templates').then(res => res.data),
+    queryFn: () => axios.get(`${BASE_URL}/api/email-templates`).then(res => res.data),
   });
 
   const { mutate: createWorkflow } = useApiMutation({
-     url: userId ? `http://localhost:4000/api/users/${userId}/workflows` : null,
+     url: userId ? `${BASE_URL}/api/users/${userId}/workflows` : null,
     queryKey: ['workflows'],
   });
 
   const { data: existingWorkflow, isLoading } = useQuery({
   queryKey: ['workflow', workflowId],
-  queryFn: () => axios.get(`http://localhost:4000/api/users/${userId}/workflows/${workflowId}`).then(res => res.data),
+  queryFn: () => axios.get(`${BASE_URL}/api/users/${userId}/workflows/${workflowId}`).then(res => res.data),
   enabled: !!workflowId && !!userId,
 });
 
@@ -235,7 +236,7 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
   const updateExistingWorkflow = async (workflowId, userId, data) => {
     setSaveStatus('saving');
     try {
-      await axios.put(`http://localhost:4000/api/users/${userId}/workflows/${workflowId}`, data);
+      await axios.put(`${BASE_URL}/api/users/${userId}/workflows/${workflowId}`, data);
       console.log(' Workflow updated successfully');
       setSaveStatus('success');
       
@@ -248,13 +249,13 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
     }
   };
 
-  // Function to schedule emails with Agenda
+  
   const scheduleEmails = async (workflow) => {
     try {
       const userId = getUserId();
       if (!userId) return;
       
-      // The scheduling is handled on the server-side in the createWorkflow and updateWorkflow routes
+     
       console.log('Email sending has been scheduled based on the sequence settings');
       
     } catch (error) {
@@ -372,67 +373,6 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
     setEdges([...edges.filter(e => e.target !== '3'), { id: `e${previousEdge?.source}-${newNodeId}`, source: previousEdge?.source || '2', target: newNodeId }, { id: `e${newNodeId}-3`, source: newNodeId, target: '3' }]);
   };
 
-  // const handleSaveWorkflow = () => {
-  //   const id = getUserId();
-  //   if (!id) {
-  //     console.log('User not found → Cannot save workflow');
-  //     setSaveStatus('error');
-  //     return;
-  //   }
-
-  //   setSaveStatus('saving');
-
-  //   const formattedNodes = nodes.map(node => ({
-  //     id: node.id,
-  //     type:
-  //       node.id === '1' ? 'loadSourceNode'
-  //       : node.data?.emailTemplateId ? 'coldEmailNode'
-  //       : node.data?.waitFor ? 'delayNode'
-  //       : 'addButton',
-  //     position: node.position,
-  //     data: {
-  //       label: node.data.header || 'No Label',
-  //       leadSourceId: node.data?.leadSourceId,
-  //       emailTemplateId: node.data?.emailTemplateId,
-  //       waitFor: node.data?.waitFor,
-  //       waitType: node.data?.waitType,
-  //     },
-  //   }));
-    
-   
-  //   const formattedEdges = edges.map(edge => ({
-  //     id: edge.id,
-  //     source: edge.source,
-  //     target: edge.target
-  //   }));
-
-  //   const payload = { user: id, nodes: formattedNodes, edges: formattedEdges };
-
-    
-  //   const isEditing = !!workflowId;
-    
-  //   if (isEditing) {
-      
-  //     updateExistingWorkflow(workflowId, id, payload);
-  //   } else {
-      
-  //     createWorkflow(payload, {
-  //       onSuccess: () => {
-  //         console.log(' Workflow created successfully');
-  //         setSaveStatus('success');
-        
-  //         setTimeout(() => {
-  //           navigate('/dashboard');
-  //         }, 1500);
-  //       },
-        
-  //       onError: (error) => {
-  //         console.error(' Workflow creation failed:', error?.response?.data?.message || error.message);
-  //         setSaveStatus('error');
-  //       },
-  //     });
-  //   }
-  // };
 
  const handleSequenceSettingsSave = async (sequenceSettingsData) => {
   const userId = getUserId();
@@ -444,7 +384,7 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
 
   setSaveStatus('saving');
 
-  // Format nodes for backend
+  
   const formattedNodes = nodes.map((node) => ({
     id: node.id,
     type:
@@ -466,19 +406,19 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
     },
   }));
 
-  // Format edges for backend
+  
   const formattedEdges = edges.map((edge) => ({
     id: edge.id,
     source: edge.source,
     target: edge.target,
   }));
 
-  // Format sequenceSettings for backend
+  
   const sequenceSettings = {
     launchDate: new Date(sequenceSettingsData.launchDate),
     launchTime: sequenceSettingsData.launchTime,
     timezone: sequenceSettingsData.timezone,
-    sendingMode: 'batch', // Always use batch mode
+    sendingMode: 'batch', 
     randomDelays: {
       enabled: sequenceSettingsData.addRandomDelays,
       fromMinutes: parseInt(sequenceSettingsData.delayFrom, 10),
@@ -495,7 +435,7 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
     })),
   };
 
-  // Combined payload
+  
   const payload = {
     user: userId,
     name: sequenceSettingsData.workflowName || 'Untitled Campaign',
@@ -508,17 +448,17 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
     let savedWorkflowId;
     
     if (workflowId) {
-      // Update existing workflow
+     
       const response = await axios.put(
-        `http://localhost:4000/api/users/${userId}/workflows/${workflowId}`, 
+        `${BASE_URL}/api/users/${userId}/workflows/${workflowId}`, 
         payload
       );
       savedWorkflowId = workflowId;
       console.log('Workflow updated successfully.');
     } else {
-      // Create new workflow
+    
       const response = await axios.post(
-        `http://localhost:4000/api/users/${userId}/workflows`, 
+        `${BASE_URL}/api/users/${userId}/workflows`, 
         payload
       );
       savedWorkflowId = response.data._id;
@@ -527,10 +467,10 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
     
     setSaveStatus('success');
     
-    // No need to explicitly call scheduleEmails - the server handles this automatically
+    
     console.log(`Emails scheduled for workflow ID: ${savedWorkflowId}`);
     
-    // Show success message briefly before redirecting
+   
     setTimeout(() => {
       navigate('/dashboard');
     }, 1500);
@@ -546,7 +486,7 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
   
 
   const onDeleteNode = (nodeId) => {
-    // For the lead source node (node 1), clear its data but don't delete it
+    
     if (nodeId === '1') {
       setNodes(prev => prev.map(n => n.id === '1' ? { 
         ...n, 
@@ -558,12 +498,12 @@ export default function Reactflow({ existingNodes, existingEdges, workflowId }) 
         } 
       } : n));
       
-      // Also remove any edge connecting node 1 to node 2
+    
       setEdges(prev => prev.filter(e => !(e.source === '1' && e.target === '2')));
       
       console.log('Lead source data cleared');
     } else {
-      // For other nodes, delete them as normal
+      
       const nodeToDelete = nodesRef.current.find(n => n.id === nodeId);
       if (!nodeToDelete) return;
       

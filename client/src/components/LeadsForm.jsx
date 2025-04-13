@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApiMutation } from '../hooks/useApiMutation';
+import { BASE_URL } from '../../../server/utils/BaseUrl';
 
 const LeadsForm = ({ onClose }) => {
   const [name, setName] = useState('');
@@ -9,7 +10,7 @@ const LeadsForm = ({ onClose }) => {
   const [emailCount, setEmailCount] = useState(0);
 
   const { mutate: createLeadSource } = useApiMutation({
-    url: 'http://localhost:4000/api/lead-sources',
+    url:` ${BASE_URL}/api/lead-sources`,
     queryKey: ['leadSources'],
   });
 

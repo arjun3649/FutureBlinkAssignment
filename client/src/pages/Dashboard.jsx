@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { BASE_URL } from "../../../server/utils/BaseUrl";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Dashboard = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['workflows-list'],
-    queryFn: () => axios.get(`http://localhost:4000/api/users/${userId}/workflows`).then(res => res.data)
+    queryFn: () => axios.get(`${BASE_URL}/api/users/${userId}/workflows`).then(res => res.data)
   });
 
   const workflows = Array.isArray(data) ? data : [];

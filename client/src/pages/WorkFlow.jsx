@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Reactflow from "../components/Reactflow";
+import { BASE_URL } from "../../../server/utils/BaseUrl";
 
 const WorkflowPage = () => {
   const { id } = useParams();
@@ -25,7 +26,7 @@ const WorkflowPage = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['workflow', id],
-    queryFn: () => axios.get(`http://localhost:4000/api/users/${userId}/workflows/${id}`).then(res => res.data),
+    queryFn: () => axios.get(`${BASE_URL}/api/users/${userId}/workflows/${id}`).then(res => res.data),
   });
 
   if (isLoading) return <p className="text-center">Loading...</p>;

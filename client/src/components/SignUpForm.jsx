@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import React, { useState } from 'react';
+import { BASE_URL } from '../../../server/utils/BaseUrl';
 
 const SignUpForm = ({ onSignupSuccess }) => {
   const [username, setUsername] = useState('');
@@ -10,7 +11,7 @@ const SignUpForm = ({ onSignupSuccess }) => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (userData) => {
-      const response = await fetch('http://localhost:4000/api/auth/signup', {
+      const response = await fetch(`${BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +34,7 @@ const SignUpForm = ({ onSignupSuccess }) => {
       setPassword('');
       
       
-      // Close modal 
+      
       if (onSignupSuccess) {
         onSignupSuccess();
       }

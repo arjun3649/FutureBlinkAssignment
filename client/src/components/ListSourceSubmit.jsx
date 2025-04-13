@@ -13,22 +13,22 @@ const ListSubmitCard = ({ onClose, onInsertLead, leadSources, onButtonClick, but
     }
   };
 
-  // Get email count for selected lead source
+  
   const getSelectedLeadEmailCount = () => {
     const selectedLead = leadSources.find((lead) => lead.name === selectedValue);
     if (!selectedLead) return 0;
     
-    // Count emails in the body field
+  
     return selectedLead.body 
       ? selectedLead.body.split(',').filter(email => email.trim()).length 
       : selectedLead.emailCount || 0;
   };
 
-  // Filter and format options to include email counts
+  
   const options = leadSources
     .filter(lead => !searchTerm || lead.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .map((lead) => {
-      // Calculate email count if not already provided
+    
       const emailCount = lead.emailCount || 
         (lead.body ? lead.body.split(',').filter(email => email.trim()).length : 0);
       
